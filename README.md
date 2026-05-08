@@ -65,6 +65,39 @@ claude mcp list
 # azure-sql: ... - ✓ Connected
 ```
 
+#### Multiple databases (e.g. dev + staging)
+
+Register one entry per database. Reuse the same `command`/`args` and pass
+the connection details via the entry's `env` block — values supplied here
+take precedence over `.env`, so each entry connects to its own database:
+
+```json
+{
+  "mcpServers": {
+    "azure-sql-dev": {
+      "command": "/absolute/path/to/mcp-azure-sql/.venv/bin/python",
+      "args": ["/absolute/path/to/mcp-azure-sql/server.py"],
+      "env": {
+        "MCP_DB_SERVER": "your-dev-server.database.windows.net",
+        "MCP_DB_DATABASE": "your-dev-db"
+      }
+    },
+    "azure-sql-stg": {
+      "command": "/absolute/path/to/mcp-azure-sql/.venv/bin/python",
+      "args": ["/absolute/path/to/mcp-azure-sql/server.py"],
+      "env": {
+        "MCP_DB_SERVER": "your-stg-server.database.windows.net",
+        "MCP_DB_DATABASE": "your-stg-db"
+      }
+    }
+  }
+}
+```
+
+Each entry runs as an independent process and shows up as a separate tool
+set in the client. Drop the per-entry `env` block to fall back to the
+project-local `.env`.
+
 If it shows `✗ Failed to connect`, run with debug logging:
 
 ```bash
